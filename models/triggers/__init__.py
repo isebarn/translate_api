@@ -1,6 +1,7 @@
 from models import Book
 from models import Text
 from mongoengine.signals import post_save
+from mongoengine.signals import pre_save
 from requests import get
 from requests import post
 from epub2txt import epub2txt
@@ -25,6 +26,9 @@ def download_book(sender, document, created):
                 for index, sentence in enumerate(text)
             ]
         )
+
+        document.length = len(text)
+        document.save()
 
 
 post_save.connect(download_book, sender=Book)

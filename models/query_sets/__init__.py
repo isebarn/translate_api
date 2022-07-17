@@ -28,19 +28,7 @@ class TextQuerySet(QuerySet):
         ]
         [x.save() for x in untranslated]
 
-        book = texts[0].book
-        book.location = texts[0].index
-        book.save()
-
         return [x.to_json() for x in texts]
 
     def word(self, cls, filters):
         return [{"translation": translate(filters.pop("word"))}]
-
-
-class UserQuerySet(QuerySet):
-    pass
-
-
-class DownloadQuerySet(QuerySet):
-    pass

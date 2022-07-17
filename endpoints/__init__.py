@@ -78,9 +78,6 @@ book_full = api.model("book", models.Book.model(api))
 text_base = api.model("text_base", models.Text.base())
 text_reference = api.model("text_reference", models.Text.reference())
 text_full = api.model("text", models.Text.model(api))
-user_base = api.model("user_base", models.User.base())
-user_reference = api.model("user_reference", models.User.reference())
-user_full = api.model("user", models.User.model(api))
 
 
 @api.route("/book")
@@ -155,43 +152,6 @@ class BaseTextController(Resource):
 
     def delete(self, text_id):
         return models.Text.get(id=text_id).delete()
-
-
-@api.route("/user")
-class UserController(Resource):
-    @api.marshal_list_with(api.models.get("user"), skip_none=True)
-    def get(self):
-        return models.User.qry(request.args)
-
-    @api.marshal_with(api.models.get("user"), skip_none=True)
-    def post(self):
-        return models.User.post(request.get_json())
-
-    @api.marshal_with(api.models.get("user"), skip_none=True)
-    def put(self):
-        return models.User.put(request.get_json())
-
-    @api.marshal_with(api.models.get("user"), skip_none=True)
-    def patch(self):
-        return models.User.patch(request.get_json())
-
-
-@api.route("/user/<user_id>")
-class BaseUserController(Resource):
-    @api.marshal_with(api.models.get("user"), skip_none=True)
-    def get(self, user_id):
-        return models.User.objects.get(id=user_id).to_json()
-
-    @api.marshal_with(api.models.get("user"), skip_none=True)
-    def put(self, user_id):
-        return models.User.put({"id": user_id, **request.get_json()})
-
-    @api.marshal_with(api.models.get("user"), skip_none=True)
-    def patch(self, user_id):
-        return models.User.patch({"id": user_id, **request.get_json()})
-
-    def delete(self, user_id):
-        return models.User.get(id=user_id).delete()
 
 
 routes = list(set([x.urls[0].split("/")[1] for x in api.resources]))

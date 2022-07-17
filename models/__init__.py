@@ -37,7 +37,6 @@ from flask_restx.fields import Raw
 
 from models.query_sets import BookQuerySet
 from models.query_sets import TextQuerySet
-from models.query_sets import UserQuerySet
 
 ## EXTRA
 
@@ -373,7 +372,7 @@ class Extended(Document, Base):
         if "$queryset" in filters:
             return getattr(cls.objects, filters.pop("$queryset"))(cls, filters)
 
-        if hasattr(cls._meta["queryset_class"], "default"):
+        elif hasattr(cls._meta["queryset_class"], "default"):
             return cls.objects.default(cls, filters)
 
         else:
@@ -455,7 +454,8 @@ class Book(Extended):
 
     url = StringField()
     name = StringField()
-    location = IntField()
+    saved = BooleanField(default=False)
+    length = IntField()
 
 
 class Text(Extended):
@@ -465,14 +465,6 @@ class Text(Extended):
     text = StringField()
     translation = StringField()
     index = IntField()
-
-
-class User(Extended):
-    meta = {"queryset_class": UserQuerySet}
-
-    username = StringField()
-    password = StringField()
-    books = ListField(ReferenceField(Book))
 
 
 # def config():

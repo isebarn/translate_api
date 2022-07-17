@@ -2,7 +2,7 @@ table book {
   url varchar
   name varchar
   saved boolean default=False
-  location integer default=0
+  length integer default=0
 }}
 
 table text {
@@ -10,11 +10,5 @@ table text {
   text varchar
   translation varchar
   index integer
-}
-
-table user {
-  username varchar
-  password varchar
-  books [ref: < book.id]
 }
 
