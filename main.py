@@ -14,15 +14,17 @@ from endpoints import api as _api
 from extensions import api_list
 import models.triggers
 
-for item in os.listdir("endpoints"):
-    if item.endswith(".py") and not item == "__init__.py":
-        __import__("endpoints.{}".format(item.split(".py")[0]))
 
 app = Flask("api")
 app.config["PROPAGATE_EXCEPTIONS"] = False
 CORS(app, resources={r"/*": {"origins": "*"}})
 api = Api(app)
 api.add_namespace(_api)
+
+for item in os.listdir("endpoints"):
+    if item.endswith(".py") and not item == "__init__.py":
+        imprt = __import__("endpoints.{}".format(item.split(".py")[0]))
+        api.add_namespace(getattr(imprt, item.split(".py")[0]).api)
 
 for extension in api_list:
     api.add_namespace(extension)
