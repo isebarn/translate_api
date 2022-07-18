@@ -11,7 +11,11 @@ from googletrans import Translator
 translator = Translator()
 
 api = Namespace("diario_de_noticas", description="")
-base_url = "https://www.dn.pt/"
+base_url = "https://www.dn.pt"
+
+
+def find_helper(element, tag, _filter):
+    return element.find(tag, _filter).text if element.find(tag, _filter) else None
 
 
 @api.route("/front_page")
@@ -25,11 +29,14 @@ class FrontPageController(Resource):
 
         articles = [
             {
-                "title": article.find("h2", {"class": "t-am-title"}).text,
-                "picture": article.find("img").get("src")
-                if article.find("img")
-                else None,
+                "title": find_helper(article, "h2", {"class": "t-am-title"}),
+                "lead": find_helper(article, "h4", {"class": "t-am-lead"}),
+                "kicker": find_helper(article, "h3", {"class": "t-am-categ"}),
+                "src": article.find("img").get("src") if article.find("img") else None,
                 "url": base_url + article.find("a", {"class": "t-am-text"})["href"],
+                "category": article.find("a", {"class": "t-am-text"})["href"].split(
+                    "/"
+                )[1],
             }
             for article in articles_items
             if article.find("h2", {"class": "t-am-title"})
