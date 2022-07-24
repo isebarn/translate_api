@@ -7,6 +7,7 @@ from flask_restx import Resource
 from bs4 import BeautifulSoup
 from requests import get
 from googletrans import Translator
+from nltk import sent_tokenize
 
 translator = Translator()
 
@@ -55,9 +56,19 @@ class ArticleController(Resource):
         page = soup.find_all("p")
 
         untranslated = [x.text for x in page if x.text and not x.text.isspace()]
-        translations = translator.translate(untranslated, src="pt", dest="en")
-
-        return [
-            {"untranslated": untranslated, "translation": translation.text}
-            for untranslated, translation in zip(untranslated, translations)
+        untranslated = [sent_tokenize(x) for x in untranslated]
+        translations = [
+            translator.translate(x, src="pt", dest="en") for x in untranslated
         ]
+
+        result = []
+
+        for untranslated, translated in zip(untranslated, translations):
+            result.append(
+                [
+                    {"untranslated": x, "translation": y.text}
+                    for x, y in zip(untranslated, translated)
+                ]
+            )
+
+        return result
